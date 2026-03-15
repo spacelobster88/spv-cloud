@@ -61,12 +61,9 @@ export default function HomePage() {
           <div className="flex justify-center mb-6">
             <Logo size={100} />
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold mb-2">
+          <h1 className="text-5xl md:text-6xl font-bold mb-3">
             专汽智云
           </h1>
-          <p className="text-[var(--color-accent-light)] text-2xl md:text-3xl font-light mb-3">
-            SPV Cloud
-          </p>
           <p className="text-[var(--color-text-light)] text-lg mb-10 max-w-2xl mx-auto">
             Special Purpose Vehicle Digital Platform
           </p>
