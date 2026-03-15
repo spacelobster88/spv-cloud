@@ -76,7 +76,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         <aside className="lg:w-80 flex-shrink-0">
           <form action="/search" method="get">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-              <div className="bg-blue-600 text-white px-4 py-3 font-semibold">
+              <div className="bg-[var(--color-primary)] text-white px-4 py-3 font-semibold">
                 多条件组合查询
               </div>
 
@@ -116,7 +116,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
                 {/* Buttons */}
                 <div className="flex gap-2 pt-2">
-                  <button type="submit" className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors font-medium">
+                  <button type="submit" className="flex-1 bg-[var(--color-accent)] text-white py-2 rounded hover:bg-[var(--color-accent-light)] transition-colors font-medium">
                     查询
                   </button>
                   <a href="/search" className="flex-1 bg-gray-100 text-gray-700 py-2 rounded hover:bg-gray-200 transition-colors text-center font-medium">
@@ -133,7 +133,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           {/* Result header */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 px-4 py-3 mb-4 flex items-center justify-between">
             <div className="text-sm text-gray-600">
-              共找到 <span className="text-blue-600 font-bold text-base">{result.total}</span> 条记录
+              共找到 <span className="text-[var(--color-accent)] font-bold text-base">{result.total}</span> 条记录
               {params.keyword && <span className="ml-2">关键词：<span className="text-orange-500">{params.keyword}</span></span>}
             </div>
             <div className="text-sm text-gray-500">
@@ -154,7 +154,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 <Link
                   key={v.id}
                   href={`/vehicle/${v.id}`}
-                  className="block bg-white rounded-lg shadow-sm border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all"
+                  className="block bg-white rounded-lg shadow-sm border border-gray-200 hover:border-[var(--color-accent)] hover:shadow-md transition-all"
                 >
                   <div className="flex flex-col sm:flex-row p-4 gap-4">
                     {/* Image */}
@@ -170,7 +170,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                     {/* Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between mb-2">
-                        <h3 className="font-bold text-blue-700 text-base">
+                        <h3 className="font-bold text-[var(--color-primary)] text-base">
                           {v.brand} {v.vehicleType}
                           <span className="text-gray-500 font-normal text-sm ml-2">{v.modelNumber}</span>
                         </h3>
@@ -216,7 +216,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                     key={p}
                     href={buildQuery({ page: String(p) })}
                     className={`px-3 py-2 border rounded text-sm ${
-                      p === result.page ? 'bg-blue-600 text-white border-blue-600' : 'bg-white hover:bg-gray-50'
+                      p === result.page ? 'bg-[var(--color-accent)] text-white border-[var(--color-accent)]' : 'bg-white hover:bg-gray-50'
                     }`}
                   >
                     {p}

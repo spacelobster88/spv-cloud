@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+:root {
+  --color-primary: #1B2B4B;
+  --color-accent: #2D8CA0;
+  --color-accent-light: #3AAFC9;
+  --color-bg-dark: #0F1B2D;
+  --color-text-light: #E8EDF2;
+}
+
 body {
   font-family: "Microsoft YaHei", "微软雅黑", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
 }

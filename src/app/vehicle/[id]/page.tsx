@@ -104,9 +104,9 @@ export default async function VehiclePage({ params }: VehiclePageProps) {
       {/* Main content */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4">
+        <div className="bg-[var(--color-primary)] text-white px-6 py-4">
           <h1 className="text-xl font-bold">{vehicle.brand} {vehicle.vehicleType}</h1>
-          <p className="text-blue-100 text-sm mt-1">型号：{vehicle.modelNumber} | 公告号：{vehicle.announcement}</p>
+          <p className="text-[var(--color-text-light)] text-sm mt-1">型号：{vehicle.modelNumber} | 公告号：{vehicle.announcement}</p>
         </div>
 
         <div className="flex flex-col lg:flex-row">
@@ -191,7 +191,7 @@ export default async function VehiclePage({ params }: VehiclePageProps) {
               <Link
                 key={v.id}
                 href={`/vehicle/${v.id}`}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all overflow-hidden"
+                className="bg-white rounded-lg shadow-sm border border-gray-200 hover:border-[var(--color-accent)] hover:shadow-md transition-all overflow-hidden"
               >
                 <Image
                   src={v.imageUrl}
