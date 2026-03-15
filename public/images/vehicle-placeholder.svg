@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#f0f4f8"/>
+  <rect x="60" y="140" width="280" height="90" rx="8" fill="#c8d6e5"/>
+  <rect x="80" y="120" width="180" height="60" rx="6" fill="#dfe6ed"/>
+  <circle cx="130" cy="240" r="25" fill="#576574"/>
+  <circle cx="130" cy="240" r="12" fill="#f0f4f8"/>
+  <circle cx="300" cy="240" r="25" fill="#576574"/>
+  <circle cx="300" cy="240" r="12" fill="#f0f4f8"/>
+  <rect x="270" y="150" width="50" height="25" rx="3" fill="#a4b0be"/>
+  <text x="200" y="290" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#8395a7">车辆图片</text>
+</svg>
