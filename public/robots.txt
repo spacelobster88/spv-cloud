@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://spv-cloud.com/sitemap.xml

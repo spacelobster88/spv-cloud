@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
+    container_name: spv-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  fastapi:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: spv-fastapi
+    ports:
+      - "8000:8000"
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - CORS_ORIGINS=http://localhost:3000,http://frontend:3000
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+
+  # Optional: run Next.js frontend in Docker as well.
+  # Uncomment below or run `npm run dev` locally with the proxy configured.
+  #
+  # frontend:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.frontend
+  #   container_name: spv-frontend
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - FASTAPI_URL=http://fastapi:8000
+  #   depends_on:
+  #     - fastapi
+
+volumes:
+  es_data:
+    driver: local
