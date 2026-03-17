@@ -7,6 +7,7 @@ import Logo from './Logo';
 const navLinks = [
   { href: '/', label: '首页' },
   { href: '/search', label: '产品库' },
+  { href: '/compare', label: '车型对比' },
   { href: '/#tools', label: '工具箱' },
   { href: '/coming-soon', label: '知识库' },
   { href: '/coming-soon', label: '关于' },

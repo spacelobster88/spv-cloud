@@ -106,7 +106,8 @@ def _in_memory_search(req: VehicleSearchRequest) -> dict[str, Any]:
     facet_fields = [
         "brand", "vehicle_type", "emission_standard", "fuel_type",
         "drive_type", "tonnage_class", "chassis_brand", "engine_brand",
-        "announcement_batch", "manufacturer",
+        "announcement_batch", "manufacturer", "province", "city",
+        "usage_category",
     ]
     aggregations: dict[str, list[dict[str, Any]]] = {}
     for field in facet_fields:
@@ -212,7 +213,8 @@ def _try_es_search(req: VehicleSearchRequest) -> dict[str, Any] | None:
         facet_fields = [
             "brand", "vehicle_type", "emission_standard", "fuel_type",
             "drive_type", "tonnage_class", "chassis_brand", "engine_brand",
-            "announcement_batch", "manufacturer",
+            "announcement_batch", "manufacturer", "province", "city",
+            "usage_category",
         ]
         for field in facet_fields:
             body["aggs"][field] = {"terms": {"field": f"{field}.keyword", "size": 50}}

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { CompareProvider } from "@/components/CompareContext";
+import CompareBarWrapper from "@/components/CompareBarWrapper";
 
 export const metadata: Metadata = {
   title: "专汽智云 | SPV Cloud",
@@ -20,9 +22,12 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body className="antialiased bg-gray-50 text-gray-900 min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <CompareProvider>
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <CompareBarWrapper />
+          <Footer />
+        </CompareProvider>
       </body>
     </html>
   );

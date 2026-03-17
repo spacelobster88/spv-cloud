@@ -1,0 +1,19 @@
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  },
+  "mappings": {
+    "properties": {
+      "model_number": { "type": "keyword" },
+      "vehicle_name": { "type": "text" },
+      "batch": { "type": "keyword" },
+      "batch_number": { "type": "integer" },
+      "date": { "type": "date" },
+      "change_type": { "type": "keyword" },
+      "changed_fields": { "type": "object", "enabled": false },
+      "changed_field_names": { "type": "keyword" },
+      "timestamp": { "type": "date" }
+    }
+  }
+}

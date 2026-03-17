@@ -117,6 +117,43 @@ export interface Vehicle {
   /** Meets environmental standards */
   is_environmental: boolean;
 
+  // -- 地区信息 (Location) ----------------------------------------------------
+  /** 企业所属省份 */
+  province?: string;
+  /** 企业所属地级市 */
+  city?: string;
+
+  // -- 分类 (Classification) --------------------------------------------------
+  /** 车辆用途类别 */
+  usage_category?: string;
+
+  // -- 工信部信息 (MIIT Specific) -----------------------------------------------
+  /** 工信部参数代码 */
+  miit_code?: string;
+  /** 工信部批次号 */
+  miit_batch_number?: number;
+  /** 数据来源 */
+  data_source?: string;
+
+  // -- 扩展信息 (Extended Info) -------------------------------------------------
+  /** 备案参数 (opaque JSON blob) */
+  backup_params?: Record<string, unknown>;
+  /** 检验方案 */
+  inspection_scheme?: string;
+  /** 交通部达标车型 */
+  compliance_vehicle?: boolean;
+  /** 环保信息 */
+  environmental_info?: string;
+
+  // -- 变更追踪 (Change Tracking) -----------------------------------------------
+  /** Change history across batches */
+  change_history?: Array<{
+    batch: string;
+    date: string;
+    change_type: string;
+    changed_fields: Record<string, unknown>;
+  }>;
+
   // -- 其他 (Other) ----------------------------------------------------------
   /** Image URLs */
   images: string[];
@@ -151,7 +188,12 @@ export type VehicleKeywordField =
   | "engine_model"
   | "emission_standard"
   | "fuel_type"
-  | "certificate_number";
+  | "certificate_number"
+  | "province"
+  | "city"
+  | "usage_category"
+  | "miit_code"
+  | "data_source";
 
 /** Fields that support numeric range queries. */
 export type VehicleNumericField =
@@ -175,7 +217,8 @@ export type VehicleNumericField =
   | "power_hp"
   | "torque"
   | "cylinders"
-  | "fuel_consumption";
+  | "fuel_consumption"
+  | "miit_batch_number";
 
 /** A numeric range filter value. */
 export interface NumericRange {
@@ -196,6 +239,7 @@ export interface VehicleSearchRequest {
     is_tax_exempt?: boolean;
     is_fuel_exempt?: boolean;
     is_environmental?: boolean;
+    compliance_vehicle?: boolean;
   };
   /** Pagination */
   page?: number;

@@ -133,10 +133,98 @@ OPTIONAL_FIELD_DEFAULTS: dict[str, Any] = {
 
 REQUIRED_FIELDS = {"id", "name", "brand"}
 
+# ---------------------------------------------------------------------------
+# Province mapping — manufacturer keywords → province
+# ---------------------------------------------------------------------------
+PROVINCE_MAPPING: dict[str, str] = {
+    "东风": "湖北",
+    "一汽": "吉林",
+    "解放": "吉林",
+    "中国重汽": "山东",
+    "重汽": "山东",
+    "济南重汽": "山东",
+    "福田": "北京",
+    "北汽福田": "北京",
+    "欧曼": "北京",
+    "陕汽": "陕西",
+    "陕西汽车": "陕西",
+    "江淮": "安徽",
+    "安徽江淮": "安徽",
+    "华菱": "安徽",
+    "华菱星马": "安徽",
+    "大运": "山西",
+    "大运汽车": "山西",
+    "北奔": "内蒙古",
+    "北奔重汽": "内蒙古",
+    "三一": "湖南",
+    "三一重工": "湖南",
+    "徐工": "江苏",
+    "徐工汽车": "江苏",
+    "柳工": "广西",
+    "柳工集团": "广西",
+    "上汽": "上海",
+    "红岩": "重庆",
+    "上汽红岩": "重庆",
+    "江铃": "江西",
+    "庆铃": "重庆",
+    "比亚迪": "广东",
+    "宇通": "河南",
+}
+
+# ---------------------------------------------------------------------------
+# Usage category mapping — vehicle_type keywords → usage category
+# ---------------------------------------------------------------------------
+USAGE_CATEGORY_MAPPING: dict[str, str] = {
+    # 运输类
+    "冷藏车": "运输类",
+    "厢式运输车": "运输类",
+    "仓栅式运输车": "运输类",
+    # 工程类
+    "自卸车": "工程类",
+    "搅拌车": "工程类",
+    "泵车": "工程类",
+    "随车吊": "工程类",
+    # 市政环卫类
+    "洒水车": "市政环卫类",
+    "垃圾车": "市政环卫类",
+    "压缩垃圾车": "市政环卫类",
+    "扫路车": "市政环卫类",
+    # 消防类
+    "消防车": "消防类",
+    # 医疗类
+    "救护车": "医疗类",
+    # 特种作业类
+    "高空作业车": "特种作业类",
+    "清障车": "特种作业类",
+}
+
 
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
+
+def enrich_location(rec: dict) -> None:
+    """Set province (and optionally city) based on manufacturer name."""
+    manufacturer = rec.get("manufacturer", "")
+    if not manufacturer or rec.get("province"):
+        return
+    for keyword, province in PROVINCE_MAPPING.items():
+        if keyword in manufacturer:
+            rec["province"] = province
+            break
+
+
+def enrich_usage_category(rec: dict) -> None:
+    """Set usage_category based on vehicle_type keywords."""
+    vehicle_type = rec.get("vehicle_type", "")
+    if not vehicle_type or rec.get("usage_category"):
+        return
+    for keyword, category in USAGE_CATEGORY_MAPPING.items():
+        if keyword in vehicle_type:
+            rec["usage_category"] = category
+            return
+    rec["usage_category"] = "其他"
+
 
 def clean_record(record: dict) -> dict:
     """
@@ -178,6 +266,10 @@ def clean_record(record: dict) -> dict:
         val = rec.get(date_field, "")
         if isinstance(val, str) and val.endswith("Z"):
             rec[date_field] = val[:-1]
+
+    # Enrich with derived fields
+    enrich_location(rec)
+    enrich_usage_category(rec)
 
     return rec
 

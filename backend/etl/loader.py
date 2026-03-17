@@ -152,6 +152,130 @@ def bulk_index(
     return summary
 
 
+def ensure_index(es: Elasticsearch, index_name: str = INDEX_NAME) -> None:
+    """Create index if it doesn't exist (don't delete existing).
+
+    Unlike :func:`recreate_index`, this preserves existing data and only
+    creates the index when it is missing.
+    """
+    if es.indices.exists(index=index_name):
+        logger.info("Index '%s' already exists — keeping existing data.", index_name)
+        return
+
+    raw_mapping = _load_mapping()
+    use_ik = _check_ik_plugin(es)
+    body = _build_index_body(raw_mapping, use_ik)
+
+    es.indices.create(index=index_name, body=body)
+    logger.info("Index '%s' created.", index_name)
+
+
+def incremental_index(
+    es: Elasticsearch,
+    records: list[dict],
+    index_name: str = INDEX_NAME,
+) -> dict[str, Any]:
+    """Index records without recreating the index.
+
+    Updates existing docs by ``model_number`` using ``doc_as_upsert``.
+    Falls back to the record ``id`` when ``model_number`` is not present.
+
+    Returns a summary dict compatible with :func:`bulk_index`.
+    """
+    import time as _time
+
+    t0 = _time.time()
+
+    actions: list[dict] = []
+    for rec in records:
+        model_number = rec.get("model_number")
+        doc_id = rec.get("id")
+        # Prefer model_number as the document id for deduplication
+        _id = model_number or doc_id
+        if not _id:
+            logger.warning("Record has no model_number or id — skipping: %s", rec.get("name", "?"))
+            continue
+        actions.append({
+            "_op_type": "update",
+            "_index": index_name,
+            "_id": _id,
+            "doc": rec,
+            "doc_as_upsert": True,
+        })
+
+    if not actions:
+        return {
+            "index": index_name,
+            "total_submitted": 0,
+            "success": 0,
+            "errors": 0,
+            "elapsed_seconds": 0.0,
+        }
+
+    success, errors = bulk(es, actions, raise_on_error=False, stats_only=False)
+    elapsed = _time.time() - t0
+    error_count = len(errors) if isinstance(errors, list) else 0
+
+    summary = {
+        "index": index_name,
+        "total_submitted": len(actions),
+        "success": success,
+        "errors": error_count,
+        "elapsed_seconds": round(elapsed, 2),
+    }
+
+    if error_count:
+        logger.error("Incremental index completed with %d errors.", error_count)
+        for err in errors[:5]:
+            logger.error("  %s", err)
+    else:
+        logger.info(
+            "Incrementally indexed %d records into '%s' in %.2fs.",
+            success, index_name, elapsed,
+        )
+
+    return summary
+
+
+def update_record(
+    es: Elasticsearch,
+    model_number: str,
+    updates: dict,
+    index_name: str = INDEX_NAME,
+) -> bool:
+    """Update a single record by model_number.
+
+    Searches for the document by ``model_number``, then applies *updates*
+    as a partial document update.
+
+    Returns ``True`` if the record was found and updated, ``False`` otherwise.
+    """
+    try:
+        resp = es.search(
+            index=index_name,
+            body={
+                "query": {"term": {"model_number": model_number}},
+                "size": 1,
+            },
+        )
+        hits = resp.get("hits", {}).get("hits", [])
+        if not hits:
+            logger.warning("No record found for model_number=%s", model_number)
+            return False
+
+        doc_id = hits[0]["_id"]
+        es.update(
+            index=index_name,
+            id=doc_id,
+            body={"doc": updates},
+        )
+        logger.info("Updated record %s (model_number=%s).", doc_id, model_number)
+        return True
+    except Exception as exc:
+        logger.error("Failed to update model_number=%s: %s", model_number, exc)
+        return False
+
+
 def load_into_es(
     records: list[dict],
     es_url: str | None = None,

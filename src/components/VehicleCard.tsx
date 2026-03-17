@@ -1,5 +1,6 @@
 import type { Vehicle } from "@/types/vehicle";
 import Link from "next/link";
+import CompareCheckbox from "./CompareCheckbox";
 
 interface VehicleCardProps {
   vehicle: Vehicle;
@@ -7,11 +8,8 @@ interface VehicleCardProps {
 
 export default function VehicleCard({ vehicle: v }: VehicleCardProps) {
   return (
-    <Link
-      href={`/vehicle/${v.id}`}
-      className="block bg-white rounded-lg shadow-sm border border-gray-200 hover:border-[var(--color-accent)] hover:shadow-md transition-all"
-    >
-      <div className="p-4">
+    <div className="relative bg-white rounded-lg shadow-sm border border-gray-200 hover:border-[var(--color-accent)] hover:shadow-md transition-all">
+      <Link href={`/vehicle/${v.id}`} className="block p-4">
         {/* Title row */}
         <div className="flex items-start justify-between mb-3">
           <h3 className="font-bold text-[var(--color-primary)] text-base leading-snug">
@@ -67,8 +65,13 @@ export default function VehicleCard({ vehicle: v }: VehicleCardProps) {
           {v.is_fuel_exempt && <Tag text="燃油" color="blue" />}
           {v.is_environmental && <Tag text="环保" color="emerald" />}
         </div>
+      </Link>
+
+      {/* Compare button - sits outside the Link to avoid nested interactive elements */}
+      <div className="px-4 pb-3 pt-1">
+        <CompareCheckbox id={v.id} name={v.name} />
       </div>
-    </Link>
+    </div>
   );
 }
 

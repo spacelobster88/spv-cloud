@@ -5,7 +5,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import vehicles, search
+from routers import vehicles, search, changes, reports
 
 app = FastAPI(
     title="SPV Platform API",
@@ -33,6 +33,8 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 app.include_router(vehicles.router, prefix="/api")
 app.include_router(search.router, prefix="/api")
+app.include_router(changes.router, prefix="/api")
+app.include_router(reports.router, prefix="/api")
 
 
 # ---------------------------------------------------------------------------

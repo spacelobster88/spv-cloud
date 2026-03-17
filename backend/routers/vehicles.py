@@ -41,6 +41,37 @@ async def list_vehicles(page: int = 1, page_size: int = 20):
     return {"items": items, "total": total, "page": page, "page_size": page_size}
 
 
+@router.get("/compare")
+async def compare_vehicles(ids: str):
+    """Compare up to 4 vehicles side by side.
+    ids: comma-separated vehicle IDs, e.g. "id1,id2,id3"
+    """
+    id_list = [i.strip() for i in ids.split(",") if i.strip()]
+
+    if len(id_list) < 2:
+        raise HTTPException(
+            status_code=400,
+            detail="At least 2 vehicle IDs are required for comparison",
+        )
+
+    if len(id_list) > 4:
+        id_list = id_list[:4]
+
+    vehicles = _load_vehicles()
+    vehicle_map = {v["id"]: v for v in vehicles}
+
+    results = []
+    for vid in id_list:
+        if vid not in vehicle_map:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Vehicle not found: {vid}",
+            )
+        results.append(vehicle_map[vid])
+
+    return results
+
+
 @router.get("/{vehicle_id}")
 async def get_vehicle(vehicle_id: str):
     """Return a single vehicle by ID."""

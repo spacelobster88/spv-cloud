@@ -250,6 +250,35 @@
       "updated_at": {
         "type": "date",
         "format": "yyyy-MM-dd'T'HH:mm:ss||yyyy-MM-dd||epoch_millis"
+      },
+
+      "province": { "type": "keyword" },
+      "city": { "type": "keyword" },
+      "usage_category": { "type": "keyword" },
+      "miit_code": { "type": "keyword" },
+      "miit_batch_number": { "type": "integer" },
+      "data_source": { "type": "keyword" },
+      "backup_params": { "type": "object", "enabled": false },
+      "inspection_scheme": {
+        "type": "text",
+        "analyzer": "ik_smart_analyzer",
+        "fields": {
+          "raw": { "type": "keyword" }
+        }
+      },
+      "compliance_vehicle": { "type": "boolean" },
+      "environmental_info": {
+        "type": "text",
+        "analyzer": "ik_smart_analyzer"
+      },
+      "change_history": {
+        "type": "nested",
+        "properties": {
+          "batch": { "type": "keyword" },
+          "date": { "type": "date" },
+          "change_type": { "type": "keyword" },
+          "changed_fields": { "type": "object", "enabled": false }
+        }
       }
     }
   }
