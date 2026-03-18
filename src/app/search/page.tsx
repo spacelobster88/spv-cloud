@@ -110,19 +110,14 @@ function buildRequest(
 async function fetchResults(
   req: VehicleSearchRequest,
 ): Promise<VehicleSearchResponse> {
-  // Try FastAPI backend first (only server-side)
-  const fastApiUrl = process.env.FASTAPI_URL ?? "http://localhost:8000";
+  // Try FastAPI backend first (uses GET with query params)
   try {
-    const res = await fetch(`${fastApiUrl}/api/vehicles/search`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(req),
-      signal: AbortSignal.timeout(2000),
-      cache: "no-store",
-    });
-    if (res.ok) {
-      return (await res.json()) as VehicleSearchResponse;
-    }
+    const { searchVehiclesApi } = await import("@/lib/api");
+    return await searchVehiclesApi(
+      req.query,
+      req.page ?? 1,
+      req.page_size ?? 20,
+    );
   } catch {
     // FastAPI unavailable - fall through
   }

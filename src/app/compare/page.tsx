@@ -18,19 +18,11 @@ export const metadata: Metadata = {
 // ---------------------------------------------------------------------------
 
 async function fetchVehiclesForCompare(ids: string[]): Promise<Vehicle[]> {
-  // Try FastAPI backend first
-  const fastApiUrl = process.env.FASTAPI_URL ?? "http://localhost:8000";
+  // Try FastAPI backend first (POST with ids array)
   try {
-    const res = await fetch(
-      `${fastApiUrl}/api/vehicles/compare?ids=${ids.join(",")}`,
-      {
-        signal: AbortSignal.timeout(2000),
-        cache: "no-store",
-      },
-    );
-    if (res.ok) {
-      return (await res.json()) as Vehicle[];
-    }
+    const { compareVehiclesApi } = await import("@/lib/api");
+    const vehicles = await compareVehiclesApi(ids);
+    if (vehicles.length > 0) return vehicles;
   } catch {
     // FastAPI unavailable - fall through
   }

@@ -6,42 +6,21 @@ import VehicleSpecTable from "@/components/VehicleSpecTable";
 import SimilarVehicles from "@/components/SimilarVehicles";
 
 // ---------------------------------------------------------------------------
-// Data fetching with FastAPI -> Next.js API fallback
+// Data fetching with FastAPI backend
 // ---------------------------------------------------------------------------
 
-const FASTAPI_BASE =
-  typeof window === "undefined"
-    ? process.env.FASTAPI_URL ?? "http://localhost:8000"
-    : "";
+import { fetchVehicleApi, searchVehiclesApi } from "@/lib/api";
 
-/** Try FastAPI first; fall back to the built-in Next.js API route. */
 async function fetchVehicle(id: string): Promise<Vehicle | null> {
   // Attempt 1: FastAPI backend
   try {
-    const res = await fetch(`${FASTAPI_BASE}/vehicles/${id}`, {
-      next: { revalidate: 60 },
-    });
-    if (res.ok) return (await res.json()) as Vehicle;
+    const result = await fetchVehicleApi(id);
+    if (result) return result;
   } catch {
     // FastAPI unreachable — continue to fallback
   }
 
-  // Attempt 2: Next.js API route (works on Vercel without FastAPI)
-  try {
-    const origin =
-      process.env.NEXT_PUBLIC_SITE_URL ??
-      process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000";
-    const res = await fetch(`${origin}/api/vehicles/${id}`, {
-      next: { revalidate: 60 },
-    });
-    if (res.ok) return (await res.json()) as Vehicle;
-  } catch {
-    // also failed
-  }
-
-  // Attempt 3: direct file read (SSR build-time / local dev guarantee)
+  // Attempt 2: direct file read (build-time / local dev guarantee)
   try {
     const fs = await import("fs");
     const path = await import("path");
@@ -55,32 +34,15 @@ async function fetchVehicle(id: string): Promise<Vehicle | null> {
 }
 
 async function fetchSimilarVehicles(vehicle: Vehicle): Promise<Vehicle[]> {
-  // Attempt 1: FastAPI
+  // Use search API to find vehicles with same brand
   try {
-    const res = await fetch(`${FASTAPI_BASE}/vehicles/${vehicle.id}/similar`, {
-      next: { revalidate: 60 },
-    });
-    if (res.ok) return (await res.json()) as Vehicle[];
+    const result = await searchVehiclesApi(vehicle.brand, 1, 6);
+    return result.results.filter((v) => v.id !== vehicle.id).slice(0, 6);
   } catch {
     // continue
   }
 
-  // Attempt 2: Next.js API route
-  try {
-    const origin =
-      process.env.NEXT_PUBLIC_SITE_URL ??
-      process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000";
-    const res = await fetch(`${origin}/api/vehicles/${vehicle.id}?similar=true`, {
-      next: { revalidate: 60 },
-    });
-    if (res.ok) return (await res.json()) as Vehicle[];
-  } catch {
-    // continue
-  }
-
-  // Attempt 3: direct file read
+  // Fallback: direct file read
   try {
     const fs = await import("fs");
     const path = await import("path");

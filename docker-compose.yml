@@ -25,7 +25,7 @@ services:
       dockerfile: Dockerfile
     container_name: spv-fastapi
     ports:
-      - "8000:8000"
+      - "8321:8321"
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       - CORS_ORIGINS=http://localhost:3000,http://frontend:3000
